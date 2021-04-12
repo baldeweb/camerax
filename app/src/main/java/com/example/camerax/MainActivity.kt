@@ -93,10 +93,8 @@ class MainActivity : AppCompatActivity() {
 
         // Create time-stamped output file to hold the image
         val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(
-                FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg"
+            outputDirectory, SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+                .format(System.currentTimeMillis()) + ".jpg"
         )
 
         // Create output options object which contains file + metadata
@@ -129,22 +127,17 @@ class MainActivity : AppCompatActivity() {
             Initialize your Preview object, call build on it, get a surface provider from viewfinder,
             and then set it on the preview.
             */
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewFinder.createSurfaceProvider())
-                }
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewFinder.createSurfaceProvider())
+            }
 
-            imageCapture = ImageCapture.Builder()
-                .build()
+            imageCapture = ImageCapture.Builder().build()
 
-            val imageAnalyzer = ImageAnalysis.Builder()
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                        Log.d(TAG, "Average luminosity: $luma")
-                    })
-                }
+            val imageAnalyzer = ImageAnalysis.Builder().build().also {
+                it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
+                    Log.d(TAG, "Average luminosity: $luma")
+                })
+            }
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -169,8 +162,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-            baseContext, it
-        ) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 }
