@@ -77,17 +77,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun takePhoto() {
-
-    }
-
-    private fun startCamera() {
-        /*
-        This is used to bind the lifecycle of cameras to the lifecycle owner.
-        This eliminates the task of opening and closing the camera since CameraX is lifecycle-aware.
-        */
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        //  =============   IMAGE CAPTURE   ============
         // Get a stable reference of the modifiable image capture use case
         var imageCapture = imageCapture ?: return
 
@@ -107,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    Log.d(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
@@ -117,27 +106,38 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, msg)
                 }
             })
-        //  ============= END IMAGE CAPTURE ============
+    }
+
+    private fun startCamera() {
+        /*
+        This is used to bind the lifecycle of cameras to the lifecycle owner.
+        This eliminates the task of opening and closing the camera since CameraX is lifecycle-aware.
+        */
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
             // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            /*
-            Initialize your Preview object, call build on it, get a surface provider from viewfinder,
-            and then set it on the preview.
-            */
-            val preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(viewFinder.createSurfaceProvider())
-            }
+            // Preview
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(viewFinder.surfaceProvider)
+                }
 
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = ImageCapture.Builder()
+                .build()
 
-            val imageAnalyzer = ImageAnalysis.Builder().build().also {
-                it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                    Log.d(TAG, "Average luminosity: $luma")
-                })
-            }
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .build()
+                .also {
+                    it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
+                    })
+                }
+
+            // Select back camera as a default
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 // Unbind use cases before rebinding
@@ -145,15 +145,13 @@ class MainActivity : AppCompatActivity() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this,
-                    CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    imageCapture,
-                    imageAnalyzer
+                    this@MainActivity, cameraSelector, preview, imageCapture, imageAnalyzer
                 )
+
             } catch (exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
+                Log.d(TAG, "Use case binding failed", exc)
             }
+
         }, ContextCompat.getMainExecutor(this))
     }
 
