@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
+import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
@@ -52,16 +53,13 @@ class CameraUtil {
                         }
                     }
 
-                // Select back camera as a default
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
                 try {
                     // Unbind use cases before rebinding
                     cameraProvider.unbindAll()
 
                     // Bind use cases to camera
                     cameraProvider.bindToLifecycle(
-                        activity, cameraSelector, preview, imageCapture, imageAnalyzer
+                        activity, DEFAULT_BACK_CAMERA, preview, imageCapture, imageAnalyzer
                     )
 
                 } catch (exc: Exception) {
