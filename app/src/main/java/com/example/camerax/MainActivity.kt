@@ -27,12 +27,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initData()
+        initializeData()
         setListeners()
         checkPermissions()
     }
 
-    private fun initData() {
+    private fun initializeData() {
         outputDirectory = getOutputDirectory(this)
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
